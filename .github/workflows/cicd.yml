@@ -1,0 +1,25 @@
+on: [push]
+jobs:
+  testing:
+     runs-on: ubuntu-latest
+     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.33'
+      - run: |
+        python -m pip install flask pytest
+        pytest
+  building:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.TOKEN }}
+
+      - uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ghcr.io/${{ github.repository }}:latest
